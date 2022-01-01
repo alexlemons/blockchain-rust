@@ -1,6 +1,6 @@
 ## Notes
 
-**https://morioh.com/p/d554ac13bad3**
+**https://github.com/GeekLaunch/blockchain-rust**
 
 Blockchain two main data structures:
 
@@ -53,7 +53,7 @@ as the network's hash power changes.
 
 By changing the nonce we can eventually generate a hash that matches the difficulty. The blockchain miners are finding a hash that matches the difficulty. (one miner calculates correct nonce ~ 10min and receives reward for creating new block)
 
-The most significant 16 bytes of the hash (converted to u128) must be lower than the difficulty (u128) before the block is considered valid
+The most significant 16 bytes of the hash (converted to u128) must be lower than the difficulty (u128) before the block is considered valid.
 
 An increased difficulty results in a more secure network. Difficulty is adjusted depending on the hash power / number of miners on
 the network.
@@ -68,4 +68,32 @@ Mining strategy (Proof of Work):
 4. Add block to chain
 5. Submit to peers...etc
 
-Block verification - we would verify a new block that we receive from a peer. A number of different block properties can be verified.
+Block verification - we verify new blocks received from a peer. Different block properties can be verified.
+
+Transaction verification:
+
+- overspending (where did the coins come from)
+- double spending (are the coins available)
+- impersonation (who owns the coins and who is sending them)
+- ...many more: https://en.bitcoin.it/wiki/Protocol_rules#.22tx.22_messages
+
+Transactions contain two important pieces of information, inputs and outputs:
+
+- set of inputs (which are unused outputs from previous transactions)
+- set of outputs (new outputs that can be used in future transactions)
+
+From here we can calculate:
+
+- the value of the transaction: Σinputs
+- the value of the fee: Σinputs - Σoutputs
+
+ie:
+
+50 -> [12][36]
+fee = 2
+
+Overspending verification: the sum of the value of the inputs must be greater than or equal to the sum of the generated outputs.
+
+Double-Spending verification: make sure that any one output is never used as an input more than once. The can be done by maintaining a pool of unspent outputs and rejecting any transaction that tries to spend outputs that don't exist in the pool.
+
+Impersonation verification: The can be solved by adding a cryptographic signature to the outputs to verify they're being spent by their owner.
